@@ -14,7 +14,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <complex.h>
 
 #include <FreeImage.h>
@@ -25,7 +24,7 @@
 #define BPP 24
 
 /* Determine how many steps to run before we assume a point is valid */
-#define MAX_ITERATIONS 1000
+#define MAX_ITERATIONS 200
 
 /* Usage string detailing our four parameters */
 const char* USAGE_STRING = "USAGE: %s [x] [y] [span] output.png\n\
@@ -44,7 +43,7 @@ const char* USAGE_STRING = "USAGE: %s [x] [y] [span] output.png\n\
  */
 inline double scale_to_range(double value, double min, double max)
 {
-    return value * min + ( 1 - value ) * max;
+    return value * max + ( 1 - value ) * min;
 }
 
 /* 
@@ -55,9 +54,6 @@ inline double scale_to_range(double value, double min, double max)
  */
 RGBQUAD get_pixel_color(int x, int y, double llx, double lly, double s) 
 {
-    /* I'm declaring this one in front, in case I want to be more artsy later */
-    RGBQUAD color;
-
     /* Convert our x and y values into a coordinate in the complex plane */
     complex initial = scale_to_range(x / (double)WIDTH, llx, llx + s) 
                             + scale_to_range(y / (double)WIDTH, lly, lly + s) * I;
@@ -66,11 +62,9 @@ RGBQUAD get_pixel_color(int x, int y, double llx, double lly, double s)
     for(int iter = 0 ; iter < MAX_ITERATIONS && cabs(current - initial) < 2; iter++)
         current = cpow(current, 2) + initial;
 
+    /* If the point still seems valid, color it black, otherwise, color it white */
     int color_val = cabs(current-initial) < 2 ? 0 : 255;
-    color.rgbRed   = color_val;
-    color.rgbGreen = color_val;
-    color.rgbBlue  = color_val;
-    
+    RGBQUAD color = {color_val, color_val, color_val, 0};
     return color;
 }
 
