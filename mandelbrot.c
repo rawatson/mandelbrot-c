@@ -59,12 +59,12 @@ RGBQUAD get_pixel_color(int x, int y, double llx, double lly, double s)
     RGBQUAD color;
 
     /* Convert our x and y values into a coordinate in the complex plane */
-    complex initial = scale_to_range(x / WIDTH, llx, llx + s) 
-                            + scale_to_range(y / WIDTH, lly, lly + s) * I;
+    complex initial = scale_to_range(x / (double)WIDTH, llx, llx + s) 
+                            + scale_to_range(y / (double)WIDTH, lly, lly + s) * I;
 
     complex current = initial;
     for(int iter = 0 ; iter < MAX_ITERATIONS && cabs(current - initial) < 2; iter++)
-        current = cpow(current,2) + initial;
+        current = cpow(current, 2) + initial;
 
     int color_val = cabs(current-initial) < 2 ? 0 : 255;
     color.rgbRed   = color_val;
