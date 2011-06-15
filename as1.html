@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<title>CS148: Introduction to Computer Graphics and Imaging, Summer 2010</title>
+<link rel="stylesheet" type="text/css" href="../cs148.css">
+
+</head>
+
+<body>
+
+<!-- ====== Title ====== -->
+
+<div id="Header">
+<h1 class="title">CS148 Assignment 1: Rendering the Mandlebrot Set
+</div>
+
+<!-- ====== Menu ====== -->
+
+<div id="Content">
+
+<h1>Assignment Description</h1>
+
+<p>
+You will write a program that renders the Mandelbrot Set on a section of the complex plane, as follows:
+</p>
+<p>
+<img src="mandelset.png"/>
+
+</p>
+<h1>Programming Environment</h1>
+
+<p>
+Please follow the instructions on the <a href="../index.html">main page</a> to install the required compilers on your system.
+
+</p>
+<h1>Assignment Instructions</h1>
+
+<p>Your program has to compile to an executable named "mandelbrot" and take in four command line arguments, so that is can be used as such:</p>
+  <pre>
+    ./mandelbrot x y s output.png
+      (x, y) is the minimum corner of the output square in complex space
+      s is the side length of the output square
+      output is the filename of the resulting PNG image.
+  </pre>
+<p>This should produce a single square PNG image of 800px by 800px, a rendering of the section of the complex plane described by (x,y) and s.</p>
+
+<h2>How to render the Mandelbrot Set</h2>
+<p>
+  The Mandelbrot set is a set of complex polynomial functions of the form <code>f(z) = z*z + c</code>, where <code>c</code> is a complex-valued parameter. This complex-valued parameter <code>c</code> is what we characterize a specific polynomial on, and it is this <code>c</code> that we relate to a pixel value on our rendering. Any point <code>c</code> on the complex plane is a point in the mandelbrot set if we iterate the function <code>f(z) = z*z + c</code> from <code>z = 0</code> and we find that z does not become infinite.
+<p>
+<p>
+  Calculating the mandelbrot set requires that you square a complex number. We represent complex numbers in this project as their two parts - real and imaginary - thus operations on them need to be performed by hand. Recall that squaring a complex number <code>(x+iy)^2 = (x^2 - y^2) + (2*x*y)i</code>
+</p>
+<p>
+  From this understanding of the mandelbrot set (and a quick glance at <a href="http://en.wikipedia.org/wiki/Mandelbrot_set">Wikipedia</a>) we can come up with an algorithm to draw the mandelbrot set:
+  <pre>
+    For each pixel (i,j) on the image {
+      
+      calculate the point (x0, y0) on the complex plane that this pixel represents.
+      start with the complex point x + iy where x=0, y=0;
+      
+      iterate until an exit criterion has been met or we reached our maximum iterations {
+        calculate the new (x,y) values by applying f(z) = z^2 + (x0 + y0i)
+      }
+      
+      if the point does not escape to infinity, color the pixel black.
+      if the point does escape to infinity by our approximation, color it white.
+      
+    }
+  </pre>
+  
+  <p>Since we are calculating an infinite series, we need to approximate the result by cutting off the calculation at some point. If a point is inside the mandelbrot set, we can keep iterating infinitely. To avoid this, we set a limit on the maximum iterations we will ever do. Choose this maximum value such that your picture looks like the example at the top of the page. If a point is not in the mandelbrot set, it will move beyond the confines of the (-2,-2) to (2,2) square within which the mandelbrot set lies. This is the other exit criterion - once the point we iterate on leaves this square, we know that it is not part of the mandelbrot set and thus escapes to infinity.</p>
+  
+  
+</p>    
+</p>
+
+
+<p><b>Extra Credit:</b> We require that you render the Mandelbrot set in black and white, as the example picture above (black for points inside the set, white for points outside). We will award extra credit for color renderings based on interesting color schemes. For example, using the speed of divergence or the number of iterations are known to give impressive colors.
+
+<h1>Skeleton Code and Image Output Library</h1>
+
+<p>
+  The skeleton code consists of a single file that currently uses the freeimage library to generate a monochrome PNG file. You need to have the freeimage library either installed as a system library, or follow <a href="../docs/UsingFreeImage.pdf">this guide</a> to link it against the skeleton code. You can find the <a href="../docs/FreeImage3131.pdf">FreeImage documentation here</a>. For each operating system:
+</p>
+
+<p>
+  <b>For mac users</b>, an easy way to use freeimage is to install it using <a href="http://www.macports.org/">MacPorts.</a> If you have macports installed on your system, you can install FreeImage using the command "sudo port install freeimage". This will place freeimage in your /opt/local/include and /opt/local/lib directories. We included there in the makefile's search path so this should automatically be recognized. If you need to build the library from source using the latest XCode, or you are running XCode, <a href="../resources/Makefile.osx">here is an updated makefile.osx that you need to use</a>. Replace the current makefile.osx in the source directory.
+</p>
+
+<p>
+  <b>For windows users</b>, we included the .DLL from the FreeImage site. If it does not just build inside your Visual Studio Express, please make sure you are using the latest Visual Studio Express 2010, then attempt to follow the FreeImage guide linked above, and only if this fails, talk to the instructional staff.
+</p>
+
+<p>
+  <b>For linux users</b>, you can install freeimage through your package manager system by running "sudo apt-get install libfreeimage-dev". This should work out of the box, but if not, you need to update the makefile to include the appropriate include and lib dirs, or you can build freeimage from source and copy "libfreeimage.a" into the project directory.
+</p>
+
+
+<p>
+  If you prefer, you can use the PPM format rather than freeimage. In this case, you need to write a struct to store the pixel values, and a function to write the PPM format to disk. The format is <a href="http://cs.anu.edu.au/student/comp1100.2006.s1/assts/asst1/ppm.html">described here</a> and the details can be found <a href="http://netpbm.sourceforge.net/doc/ppm.html">here</a>.
+</p>
+
+<h2><a href="as1.zip">Download the skeleton code here. (Jun 24th 10:30am)</a></h2>
+
+<h1>Submission Instructions</h1>
+
+<p>
+You need to submit both your results and source code. Your submission directory should contain:</p>
+<ul>
+  <li>results.txt</li>
+  <li>whole.png</li>
+  <li>zoom1.png</li>
+  <li>zoom2.png</li>
+  <li>zoom3.png</li>
+  <li>mandelbrot.cpp</li>
+</ul>
+<p>
+  <b>Results:</b>
+  The text file results.txt should contain, on each line, the command to reproduce one of your resulting images, in the order listed above. You need to submit the four images these four commands produce. whole.png should be the entire mandelbrot set rendered from (-2,-2) with sidelengths 4. The other three images are of your choosing, zoomed into interesting sections (for example, look at the Seahorse Valley of the set).
+</p>
+
+<p>
+  <b>Source:</b>
+  All your code has to be in a single file, and we need to be able to build this file by dropping it into our own build system.
+</p>
+
+<h2>Expected results</h2>
+
+<p>
+
+The basic functionality should not need to use more than 20 lines of C++ code. We expect the whole.png image to look like this: <br/>
+<img src="whole.png">
+</p>
+</div>
+
+</body>
+</html>

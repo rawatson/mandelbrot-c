@@ -1,0 +1,20 @@
+﻿Build started 6/21/2010 6:18:04 PM.
+     1>Project "\\vmware-host\Shared Folders\scratch\web\cs148-10-summer\as1\as1.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\mandelbrot.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"\\vmware-host\Shared Folders\scratch\web\cs148-10-summer\as1\mandelbrot.exe" /NOLOGO /LIBPATH:"\\vmware-host\Shared Folders\scratch\web\cs148-10-summer\as1\\" FreeImage.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\mandelbrot.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"\\vmware-host\Shared Folders\scratch\web\cs148-10-summer\as1\mandelbrot.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"\\vmware-host\Shared Folders\scratch\web\cs148-10-summer\as1\mandelbrot.lib" /MACHINE:X86 Debug\mandelbrot.obj
+         LINK : \\vmware-host\Shared Folders\scratch\web\cs148-10-summer\as1\mandelbrot.exe not found or not built by the last incremental link; performing full link
+         as1.vcxproj -> \\vmware-host\Shared Folders\scratch\web\cs148-10-summer\as1\mandelbrot.exe
+       Manifest:
+         C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"\\vmware-host\Shared Folders\scratch\web\cs148-10-summer\as1\mandelbrot.exe;#1" /manifest Debug\mandelbrot.exe.intermediate.manifest
+       FinalizeBuildStatus:
+         Deleting file "Debug\mandelbrot.unsuccessfulbuild".
+         Touching "Debug\mandelbrot.lastbuildstate".
+     1>Done Building Project "\\vmware-host\Shared Folders\scratch\web\cs148-10-summer\as1\as1.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.70
