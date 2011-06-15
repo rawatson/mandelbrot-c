@@ -14,20 +14,38 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <complex.h>
 
 #include <FreeImage.h>
-
 
 /* We default to outputting an 800x800 .png with 24 bits per pixel */
 #define WIDTH 800
 #define HEIGHT 800
 #define BPP 24
 
+/* Determine how many steps to run before we assume a point is valid */
+#define MAX_ITERATIONS 1000
+
+/* Usage string detailing our four parameters */
 const char* USAGE_STRING = "USAGE: %s [x] [y] [span] output.png\n\
   x:          minimum value to render on the real line\n\
   y:          minimum value to render on the complex line\n\
   span:       how far from x and y to render\n\
   output.png: where to place output\n";
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  scale_to_range
+ *  Description:  Establishes a function f:[0,1] -> [min,max] which is scales a value 
+ *      to a specified range.  Basically, it returns the value that is value units
+ *      in [min, max]
+ * =====================================================================================
+ */
+inline double scale_to_range(double value, double min, double max)
+{
+    return value * min + ( 1 - value ) * max;
+}
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -37,14 +55,36 @@ const char* USAGE_STRING = "USAGE: %s [x] [y] [span] output.png\n\
  */
 RGBQUAD get_pixel_color(int x, int y, double llx, double lly, double s) 
 {
-    RGBQUAD color = {0,0,0,0};
+    /* I'm declaring this one in front, in case I want to be more artsy later */
+    RGBQUAD color;
+
+    /* Convert our x and y values into a coordinate in the complex plane */
+    complex initial = scale_to_range(x / WIDTH, llx, llx + s) 
+                            + scale_to_range(y / WIDTH, lly, lly + s) * I;
+
+    complex current = initial;
+    for(int iter = 0 ; iter < MAX_ITERATIONS && cabs(current - initial) < 2; iter++)
+        current = cpow(current,2) + initial;
+
+    int color_val = cabs(current-initial) < 2 ? 0 : 255;
+    color.rgbRed   = color_val;
+    color.rgbGreen = color_val;
+    color.rgbBlue  = color_val;
+    
     return color;
 }
+
+
 
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  generate_image
- *  Description:  
+ *  Description:  When called with the arguments to ./mandlebrot, this function will do
+ *      all of the heavy lifting necessary to compute the image and write the result to
+ *      the specified output file.  
+ *
+ *      This function deals mainly with the image library interaction, and the hard work
+ *      is done in determining what color each pixel should be.
  * =====================================================================================
  */
 int generate_image(double llx, double lly, double s, char* filename) 
